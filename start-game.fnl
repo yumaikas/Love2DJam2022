@@ -1,14 +1,16 @@
-(local fennel (require :fennel))
-(local f (require :f))
-(local v (require :v))
 (import-macros {: each-in : check} :m)
-(local menu (require :ui.menu))
-(local {:stack ui-stack } (require :ui.containers))
-(local ui (require :ui))
-(local assets (require :assets))
-(local scenes (require :game.scenes))
+(import-macros { : imp : req : += : -= : *= : unless } :m)
+
+(imp v) (imp f)
+
+(imp assets)
+(imp fennel)
+(req scenes :game.scenes)
+(req title :game.title)
+(req shake :game.shake)
+
+
 (local gfx love.graphics)
-(local title (require :game.title))
 
 (var MODE {})
 
@@ -48,13 +50,12 @@
 
 (fn love.load [] 
 
-  (each [_ [name req] 
+  (each [_ [name r] 
          (ipairs 
            [[:title :game.title] 
             [:fish-tag :game.fish-tag]
             [:breaking-crust :game.breaking-crust] ])]
-
-    (scenes.set name (require req)))
+    (scenes.set name (require r)))
 
   (love.math.setRandomSeed (love.timer.getTime))
   ; Make these configurable?
@@ -69,16 +70,18 @@
 (fn love.draw []
   (gfx.setFont assets.font)
   ; (love.graphics.print (love.timer.getFPS) 10 10)
+  (gfx.push)
+  (shake.apply gfx)
   (when MODE.draw (MODE:draw))
-  (ui.draw))
+  (gfx.pop))
 
 (fn love.update [dt]
+  (shake.update dt)
   (when MODE.update (MODE:update dt))
 
   (set love.mouse.isJustPressed false)
   (set love.mouse.isJustReleased false)
   (set love.mouse.delta nil)
-
 
   (each [k (pairs love.keys.justPressed)]
     (when (= k :c)

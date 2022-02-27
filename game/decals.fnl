@@ -13,7 +13,7 @@
 (fn update [me dt] 
   (each [_ d (ipairs me.elts)]
     (set d.time (- d.time dt)))
-  (set me.elts (f.filter.i me.elts #(> $.time 0))))
+  (f.filter.i! me.elts #(> $.time 0)))
 
 (fn spawn [me txt pos time color]
   (table.insert me.elts 

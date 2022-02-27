@@ -1,4 +1,5 @@
 (local v (require :v))
+(local {: view} (require :fennel))
 (local vectron (require :game.vectron))
 
 (local f (require :f))
@@ -25,15 +26,14 @@
           me.vector.shapes
           [1 0.16 1]
           [0.3 0.3 1])
-        (vectron.draw me.vector.shapes))))
-  )
+        (vectron.draw me.vector.shapes)))))
 
 (local move-times [0.5 0.5 1 2 5 8])
 
 (fn retarget-fish [fish [x y] [w h] override-time]
-  (let [new-target [(random x (- w 10))
-             (random y (- h 100))]
+  (let [new-target [(random x w) (random y h)]
         target-time (or override-time (. move-times (random 1 6)))]
+
     (set fish.target new-target)
     (set fish.retarget-timer target-time)))
 

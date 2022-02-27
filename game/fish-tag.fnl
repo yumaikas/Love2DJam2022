@@ -1,14 +1,17 @@
-(local v (require :v))
-(local f (require :f))
-(local {: view } (require :fennel))
+(import-macros { : += : -= : *= : unless : req : imp } :m)
+(imp v) (imp f)
+
+(req {: view} :fennel)
+
 (local random love.math.random)
 (local noise love.math.noise)
 (local gfx love.graphics)
-(local quit (require :game.quit))
-(local start-txt (require :game.title.start-txt))
-(local scenes (require :game.scenes))
-(local player (require :game.player))
-(local decals (require :game.decals))
+
+(req quit :game.quit)
+(req scenes :game.scenes)
+(req player :game.player)
+(req decals :game.decals)
+(req shake :game.shake)
 
 (fn pick-fish [fish]
   (each [_ fish (ipairs fish)]
@@ -25,6 +28,7 @@
       (me.decals:spawn "Tag!" tagged.pos 1 [0 1 1])
       (set me.num-tags (+ 1 me.num-tags))
       (let [new-fish (pick-fish (f.filter.i fish.fish #(< 40 (v.dist $.pos player.pos))))]
+        (shake.shake [1 1] 0.25 0)
         (set new-fish.tagged true))
       )
     (each [_ fsh (ipairs fish.fish)]

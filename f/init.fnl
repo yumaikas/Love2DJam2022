@@ -135,6 +135,7 @@
  :values (fn [tbl] (icollect [_ v (pairs tbl)] v))
  :keys (fn [tbl] (icollect [k _ (pairs tbl)] k))
  : lerp
+ :adiff (fn [a b] (math.abs (- a b)))
  : unlerp
  : remap
  : table?

@@ -7,4 +7,20 @@
        (local ,ident (. tbl# i#))
        ,...)))
 
-{: check : each-in }
+(fn += [x expr] `(set ,x (+ ,x ,expr)))
+
+(fn -= [x expr] `(set ,x (- ,x ,expr)))
+
+(fn *= [x expr] `(set ,x (* ,x ,expr)))
+
+(fn imp [name]
+  `(local ,name (require ,(tostring name))))
+
+(fn req [name path]
+  `(local ,name (require ,path)))
+
+(fn unless [pred ...]
+  `(when (not ,pred)
+       ,...))
+
+{: check : each-in  : += : -= : *= : unless : imp : req}
