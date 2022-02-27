@@ -22,6 +22,13 @@
 
 (var total-time 0)
 
+(fn gfx.at [pos f] 
+  (let [[x y] pos]
+  (gfx.push)
+  (gfx.translate x y)
+  (f)
+  (gfx.pop)))
+
 (fn love.mousepressed [x y button istouch presses]
   (set love.mouse.isJustPressed true))
 
@@ -41,7 +48,12 @@
 
 (fn love.load [] 
 
-  (each [_ [name req] (ipairs [[ :title :game.title] [:level1 :game.level1]])]
+  (each [_ [name req] 
+         (ipairs 
+           [[:title :game.title] 
+            [:fish-tag :game.fish-tag]
+            [:breaking-crust :game.breaking-crust] ])]
+
     (scenes.set name (require req)))
 
   (love.math.setRandomSeed (love.timer.getTime))
@@ -56,15 +68,21 @@
 
 (fn love.draw []
   (gfx.setFont assets.font)
-  (MODE:draw)
+  ; (love.graphics.print (love.timer.getFPS) 10 10)
+  (when MODE.draw (MODE:draw))
   (ui.draw))
 
 (fn love.update [dt]
-  (MODE:update dt)
+  (when MODE.update (MODE:update dt))
+
   (set love.mouse.isJustPressed false)
   (set love.mouse.isJustReleased false)
   (set love.mouse.delta nil)
+
+
   (each [k (pairs love.keys.justPressed)]
+    (when (= k :c)
+      (love.event.quit))
     (tset love.keys.justPressed k nil))
   (when MODE.next
     (set MODE MODE.next)))

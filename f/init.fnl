@@ -1,3 +1,4 @@
+(local random love.math.random)
 (lambda assert! [val msg] (if val 
                             (io.write ".")
                             (error msg)))
@@ -6,6 +7,7 @@
 (fn number? [t] (= (type t) :number))
 (fn boolean? [t] (= (type t) :boolean))
 (fn string? [t] (= (type t) :string))
+
 (fn even? [n] (and (number? n) (= (% n 2) 0)))
 
 (fn uuid []
@@ -115,6 +117,11 @@
     (/ (- ytrue a) (- b a)))
   )
 (fn remap [x a1 a2 b1 b2] (lerp (unlerp x a1 a2) b1 b2))
+
+(fn pick-rand [elems] 
+  (let [idx (random 1 (length elems))]
+    (. elems idx)))
+
 {
  : pp
  : find
@@ -135,6 +142,7 @@
  : uuid
  : range
  : clamp
+ : pick-rand
  :map { :i (fn [tbl f] (icollect [_ el (ipairs tbl)] (f el)))
        :idx (fn [tbl f] (icollect [idx el (ipairs tbl)] (f idx el)))
        :kv (fn [tbl f] (collect [k val (pairs tbl)] (f k val))) }

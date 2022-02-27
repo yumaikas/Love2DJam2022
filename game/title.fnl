@@ -1,5 +1,6 @@
 (local v (require :v))
 (local f (require :f))
+(local assets (require :assets))
 (local vectron (require :game.vectron))
 
 (local {: view } (require :fennel))
@@ -11,34 +12,41 @@
 (local quit (require :game.quit))
 (local start-txt (require :game.title.start-txt))
 (local scenes (require :game.scenes))
+(local fish (require :game.fish))
 
 (fn draw [me] 
-  (me.surface:draw [0 30])
-  (me.floor:draw [0 650])
-
   (when (> me.flash 0)
-    (gfx.push)
-    (vectron.draw [150 680] start-txt.shapes)
-    (gfx.pop)))
-
+    (gfx.setColor [0.4 0.4 1])
+    (gfx.setFont assets.big-font)
+    (gfx.print "Tag Fish" 40 600))
+  (each [_ c (ipairs me.children)] (c:draw))
+  )
 
 (fn update [me dt]
-  (me.surface:update dt)
-  (me.floor:update dt)
-
   (set me.flash (- me.flash dt))
   (when (< me.flash (- me.flash-period))
     (set me.flash me.flash-period))
 
   (if love.mouse.isJustPressed
-    (let [level1 (scenes.get :level1)]
-      (set me.next ( level1.make me.surface me.floor)))))
+    (let [fish-tag (scenes.get :fish-tag)]
+      (set me.next (fish-tag.make me.surface me.floor me.fish))))
+
+  (each [_ c (ipairs me.children)] (c:update dt))
+
+  (each [_ fsh (ipairs me.fish.fish)]
+    (when (< fsh.retarget-timer 0)
+      (fsh:retarget [10 30] me.fish.dims)))
+  )
 
 (fn make []
-  (print (view surf))
+  (let [surface (surf.make [0 30])
+        floor (floor.make [0 500])
+        fish (fish.make-layer 1800 570 30) ]
   {
-   :surface (surf.make)
-   :floor (floor.make)
+   : surface
+   : floor
+   : fish
+   :children [surface floor fish]
    :pos [40 40]
    :flash-period 0.5
    :flash 0.5
@@ -46,7 +54,7 @@
    :next false
    : update
    : draw
-   })
+   }))
 
-(let [me {: make}]
-  me)
+{: make}
+

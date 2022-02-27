@@ -38,7 +38,6 @@
              (- max-x min-x)
              (- max-y min-y)]
         ]
-    (print (view ret))
     ret))
 
 (fn center-norm [data]
@@ -72,12 +71,18 @@
    }))
 
 
-(fn draw [pos data] 
-  (gfx.push)
-  (gfx.translate (unpack pos))
+(lambda draw [data] 
   (each [_ shape (ipairs data)]
     (gfx.setColor shape.color)
-    (gfx.line shape.points))
-  (gfx.pop))
+    (gfx.line shape.points)))
 
-{ : draw : center-norm : corner-norm }
+(fn draw-switch-color [data target new] 
+  (local [tr tb tg] target)
+  (each [_ shape (ipairs data)]
+    (let [[r b g] shape.color]
+    (if (and (= tr r) (= tb b) (= tg g))
+      (gfx.setColor new)
+      (gfx.setColor shape.color))
+    (gfx.line shape.points))))
+
+{ : draw : draw-switch-color : center-norm : corner-norm }

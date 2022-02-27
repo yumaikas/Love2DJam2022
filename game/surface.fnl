@@ -4,10 +4,11 @@
 (local noise love.math.noise)
 (local gfx love.graphics)
 
-(fn make []
+(fn make [pos]
   { 
    :time 0
    :proj-points []
+   : pos
    :points (icollect [i (f.range 0 1800 30)]
               [i 0])
 
@@ -20,9 +21,9 @@
 
      )
    :draw
-   (fn [me pos]
+   (fn [me]
      (gfx.push)
-     (gfx.translate (unpack pos))
+     (gfx.translate (unpack me.pos))
      (gfx.setColor [0.4 0.4 1])
      (gfx.line (v.flatten me.proj-points))
      (gfx.pop))
