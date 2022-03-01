@@ -1,5 +1,5 @@
 try {
-$paths = ls | ? { -not(($_.FullName -ilike "*love-bins*") -or ($_.FullName -ilike "*.ps1") -or ($_.FullName -ilike "*publish*")) } | % { $_.FullName; }
+$paths = ls -Exclude projects\,drafts\  | ? { -not(($_.FullName -ilike "*love-bins*") -or ($_.FullName -ilike "*.ps1") -or ($_.FullName -ilike "*publish*")) } | % { $_.FullName; }
 
 
 ls -Recurse .\publish\faultLines\ | Remove-Item -Recurse -Force 
@@ -8,7 +8,7 @@ ls -Recurse .\publish\faultLines\ | Remove-Item -Recurse -Force
 Remove-Item -Recurse -Force .\publish\faultLines.love
 Compress-Archive $paths publish\faultLines.love
 Push-location publish\
-"Fault Lines" | npx love.js faultLInes.love faultLines -c
+"Fault Lines" | npx love.js faultLInes.love faultLines -c -m (16777216*2)
 cd faultLines
 web-dir
 }

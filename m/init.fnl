@@ -23,4 +23,12 @@
   `(when (not ,pred)
        ,...))
 
-{: check : each-in  : += : -= : *= : unless : imp : req}
+(fn gfx-at [pos ...] 
+  (let [body (icollect [_ i (ipairs [...]) :into 
+              `(let [[x# y#] ,pos]
+                 (love.graphics.push)
+                 (love.graphics.translate x# y#))] i)]
+    (table.insert body `(love.graphics.pop))
+    body))
+
+{: check : each-in  : += : -= : *= : unless : imp : req : gfx-at}

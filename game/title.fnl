@@ -15,12 +15,22 @@
 (local fish (require :game.fish))
 
 (fn draw [me] 
-  (when (> me.flash 0)
-    (gfx.setColor [0.4 0.4 1])
-    (gfx.setFont assets.big-font)
-    (gfx.print "Tag Fish" 40 600))
-  (each [_ c (ipairs me.children)] (c:draw))
-  )
+  (gfx.origin)
+  (gfx.setColor [0.4 0.4 1])
+  (gfx.setFont assets.big-font)
+  (gfx.print "FAULT\nLINES" 90 220)
+  (let [[_ y ] (v.add me.floor.pos [0 10])
+        x 110]
+    (gfx.setFont assets.small-font)
+    (gfx.setColor [0 1 0])
+    (gfx.print "DRAG/WASD/←↑↓→" x (+ y 30))
+    (gfx.print "TO MOVE" (+ x 60) (+ y 60))
+    (gfx.print "TAP TO START" x (+ y 100))
+    (when (f.positive? me.flash)
+      (gfx.print "GREET BLUE FISH" x (+ y 130)))
+    )
+
+  (each [_ c (ipairs me.children)] (c:draw)))
 
 (fn update [me dt]
   (set me.flash (- me.flash dt))

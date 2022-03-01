@@ -1,4 +1,6 @@
-(local f (require :f))
+(import-macros {: imp : req} :m)
+(imp f) (req {: iter} :f)
+
 (local {: view} (require :fennel))
 (local assets (require :assets))
 (local gfx love.graphics)
@@ -11,7 +13,7 @@
       (gfx.print d.txt x y))))
 
 (fn update [me dt] 
-  (each [_ d (ipairs me.elts)]
+  (each [d (iter me.elts)]
     (set d.time (- d.time dt)))
   (f.filter.i! me.elts #(> $.time 0)))
 

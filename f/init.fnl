@@ -7,6 +7,7 @@
 (fn number? [t] (= (type t) :number))
 (fn boolean? [t] (= (type t) :boolean))
 (fn string? [t] (= (type t) :string))
+(fn empty? [t] (= (length t) 0))
 
 (fn even? [n] (and (number? n) (= (% n 2) 0)))
 
@@ -68,6 +69,12 @@
     (set idx (+ idx 1)))
   (not continue))
 
+(fn slice [t idx len?]
+  (let [len (or len? (length t))]
+  (icollect [i v (ipairs t) :until (> i (+ idx (- len 1)))]
+            (when (and (>= i idx)) v))))
+
+
 (fn tests! [] 
   (print "")
   (assert! (function? #(+ 1 2)) "#() is not detected as a function!")
@@ -110,17 +117,32 @@
 
 
 (fn clamp [bottom top x] (math.max bottom (math.min x top)))
+
 (fn lerp [a b t] (+ (* a (- 1 t)) (* b t)))
 (fn unlerp [a b y] 
   (let [ytrue (clamp a b y)] 
-    (pp [a b ytrue])
-    (/ (- ytrue a) (- b a)))
-  )
-(fn remap [x a1 a2 b1 b2] (lerp (unlerp x a1 a2) b1 b2))
+    (/ (- ytrue a) (- b a))))
+
+(fn remap [x a1 a2 b1 b2] (lerp b1 b2 (unlerp a1 a2 x)))
 
 (fn pick-rand [elems] 
   (let [idx (random 1 (length elems))]
     (. elems idx)))
+
+(fn pop-rand [elems]
+  (let [idx (random 1 (length elems))
+        ret (. elems idx)
+        ]
+    (table.remove elems idx)
+    ret))
+
+
+(fn iter [tbl] 
+  (var (f s vstate) (ipairs tbl))
+  (fn []
+    (let [(i v) (f s vstate)]
+      (set vstate i)
+      v)))
 
 {
  : pp
@@ -132,6 +154,10 @@
  : boolean?
  : string?
  : number?
+ :negative? (fn [x] (< x 0))
+ :positive? (fn [x] (> x 0))
+ :zero? (fn [x] (= x 0))
+ : slice
  :values (fn [tbl] (icollect [_ v (pairs tbl)] v))
  :keys (fn [tbl] (icollect [k _ (pairs tbl)] k))
  : lerp
@@ -139,11 +165,14 @@
  : unlerp
  : remap
  : table?
+ : empty?
  : with-debug
  : uuid
  : range
+ : iter
  : clamp
  : pick-rand
+ : pop-rand
  :map { :i (fn [tbl f] (icollect [_ el (ipairs tbl)] (f el)))
        :idx (fn [tbl f] (icollect [idx el (ipairs tbl)] (f idx el)))
        :kv (fn [tbl f] (collect [k val (pairs tbl)] (f k val))) }

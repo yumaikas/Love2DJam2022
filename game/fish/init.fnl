@@ -1,3 +1,4 @@
+(import-macros {: gfx-at : req : imp } :m)
 (local v (require :v))
 (local {: view} (require :fennel))
 (local vectron (require :game.vectron))
@@ -7,26 +8,23 @@
 (local noise love.math.noise)
 (local gfx love.graphics)
 (local fish-small (require :game.fish.small1))
+(local fish-small-hl (require :game.fish.small1-hl))
 
 (fn draw-fish [me] 
-  (gfx.at me.pos
-    (fn [] 
-      (if 
-        (= 0 (. me.movement 1))
-        (gfx.scale me.old-x-scale 1)
-        (> 0 (. me.movement 1))
-        (do
-          (set me.old-x-scale -1)
-          (gfx.scale -1 1))
-        (do
-          (set me.old-x-scale 1)
-          (gfx.scale 1 1)))
-      (if me.tagged
-        (vectron.draw-switch-color 
-          me.vector.shapes
-          [1 0.16 1]
-          [0.3 0.3 1])
-        (vectron.draw me.vector.shapes)))))
+  (gfx-at me.pos
+    (if 
+      (= 0 (. me.movement 1))
+      (gfx.scale me.old-x-scale 1)
+      (> 0 (. me.movement 1))
+      (do
+        (set me.old-x-scale -1)
+        (gfx.scale -1 1))
+      (do
+        (set me.old-x-scale 1)
+        (gfx.scale 1 1)))
+    (if me.tagged
+      (vectron.draw me.vector-hl.shapes)
+      (vectron.draw me.vector.shapes))))
 
 (local move-times [0.5 0.5 1 2 5 8])
 
@@ -51,7 +49,7 @@
 
   (set me.movement (v.mult 
                      (v.unit (v.sub me.target me.pos)) 
-                     me.velocity))
+                     (* me.velocity dt)))
   (set me.pos (v.add me.pos me.movement))
   )
 
@@ -71,8 +69,9 @@
    :update update-fish
    :draw draw-fish
    :vector fish-small
-   :acceleration 5
-   :max-velocity 3
+   :vector-hl fish-small-hl
+   :acceleration 200
+   :max-velocity 300
    :movement [0 0]
    :velocity 0
    :braking 0

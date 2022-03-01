@@ -5,13 +5,14 @@
 (local gfx love.graphics)
 
 (fn make [pos]
+  (local points (icollect [i (f.range 0 1800 30)]
+              [i 0]))
   { 
    :time 0
-   :proj-points []
+   :proj-points points
    :impacts [ ]
    : pos
-   :points (icollect [i (f.range 0 1800 30)]
-              [i 0])
+   :points points
 
    :impact 
    (fn [me x magnitude] 

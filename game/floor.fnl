@@ -1,8 +1,8 @@
-(local v (require :v))
-(local f (require :f))
-(import-macros { : += : -= : *= : unless } :m)
+(import-macros { : req : imp : += : -= : *= : unless : gfx-at } :m)
+(imp v) (imp f) 
+(req {: iter} :f)
+(req vectron :game.vectron)
 
-(local vectron (require :game.vectron))
 (local random love.math.random)
 (local noise love.math.noise)
 (local gfx love.graphics)
@@ -22,7 +22,14 @@
    : pos
    :update 
    (fn [me dt]
-     (set me.time (+ me.time (* 0.5 dt))))
+     (set me.time (+ me.time (* 0.5 dt)))
+     (set me.breached
+          (or
+            (> (length me.cracks) 5)
+            (f.any? me.cracks #(> $.mag 3))))
+     (each [c (iter me.cracks)]
+       (when (> c.mag 3)
+         (set c.mag 3))))
 
    :strike 
    (fn [me x mag]
@@ -43,9 +50,9 @@
        (gfx.setColor [0.7 0.5 0.3])
        (gfx.line (v.flatten me.proj-points))
        (each [_ crack (ipairs me.cracks)]
-         (gfx.at 
+         (gfx-at 
            [crack.x 20]
-           #(vectron.draw (. art crack.mag :shapes))))
+           (vectron.draw (. art crack.mag :shapes))))
 
        (gfx.pop)))
    })

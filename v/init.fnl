@@ -78,6 +78,12 @@
         ; Based on https://stackoverflow.com/a/16544330/823592
         (+ (* ax bx) (* ay by))))
 
+(fn rot<90 [[x y] ]
+    [(- y) x])
+
+(fn rot>90  [[x y]] 
+  [y (- x)])
+
 (fn project-point-onto-line [lpt1 lpt2 xpt3] 
   ; Based on https://stackoverflow.com/a/6853926/823592
   (let [[x1 y1] lpt1
@@ -98,6 +104,7 @@
       [(+ x1 (* C param))
        (+ y1 (* D param))])))
 
+
 (fn project-onto [a b]
   (let [m (mag a)
         angle-mult (math.cos (angle-of a b))
@@ -105,7 +112,13 @@
         full-mult (* m angle-mult) ]
     [(* ux full-mult) (* uy full-mult)]))
 
+(fn clamp-mag [a mag-limit] 
+  (let [u (unit a)
+        mag- (f.clamp 0 mag-limit (mag a) )]
+  (mult (unit a) mag-)
+  ))
 
 
-{ : add : sub : mult : flatten : flatten-into : dist : distxyp : dot : angle-of : unit : project-onto }
+
+{ : add : sub : mult : flatten : mag : flatten-into : dist : distxyp : dot : angle-of : unit : project-onto : rot<90 : rot>90 : clamp-mag }
 

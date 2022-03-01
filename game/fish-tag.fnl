@@ -7,11 +7,13 @@
 (local noise love.math.noise)
 (local gfx love.graphics)
 
+(local wave-delays [3 5 5 5 8 8])
+
 (req quit :game.quit)
 (req scenes :game.scenes)
 (req player :game.player)
 (req decals :game.decals)
-(req shake :game.shake)
+(req {: voice : wave } :assets)
 
 (fn pick-fish [fish]
   (each [_ fish (ipairs fish)]
@@ -20,21 +22,27 @@
         (set fish.tagged true)
         fish))
 
-(fn do-fish-tag [me]
+(fn do-fish-tag [me dt]
+  (-= me.wave-delay dt)
+  (when (f.negative? me.wave-delay)
+    (wave:stop)
+    (wave:play)
+    (set me.wave-delay (f.pick-rand wave-delays)))
+
   (let [{: fish : player} me
         tagged (f.find fish.fish (fn [sh] sh.tagged)) ]
     (when (> 40 (v.dist tagged.pos player.pos))
       (set tagged.tagged false)
-      (me.decals:spawn "Tag!" tagged.pos 1 [0 1 1])
-      (set me.num-tags (+ 1 me.num-tags))
+      (me.decals:spawn (f.pop-rand me.greetings) tagged.pos 1 [0 1 1])
       (let [new-fish (pick-fish (f.filter.i fish.fish #(< 40 (v.dist $.pos player.pos))))]
-        (shake.shake [1 1] 0.25 0)
+        (voice:stop)
+        (voice:play)
         (set new-fish.tagged true))
       )
     (each [_ fsh (ipairs fish.fish)]
       (when (< fsh.retarget-timer 0)
-        (fsh:retarget [10 30] fish.dims)))
-    (when (>= me.num-tags me.needed-tags)
+        (fsh:retarget [10 30] (v.sub fish.dims [20 0]))))
+    (when (f.all? [me.greetings me.decals.elts] f.empty?)
       (let [lnext (scenes.get :breaking-crust)]
         (set me.next 
              (lnext.make 
@@ -51,11 +59,11 @@
   (gfx.push)
   (let [[px py] me.player.pos
         (w h) (love.graphics.getDimensions)
-        target-x (f.clamp -1200 0 (+ (- px) (/ w 2))) ]
+        target-x (f.clamp -1350 0 (+ (- px) (/ w 2))) ]
     (gfx.translate target-x 0))
 
   (each [_ c (ipairs me.children)] (c:update dt))
-  (do-fish-tag me)
+  (do-fish-tag me dt)
 
   (gfx.pop)
   )
@@ -64,7 +72,7 @@
   (gfx.push)
   (let [[px py] me.player.pos
         (w h) (love.graphics.getDimensions)
-        target-x (f.clamp -1200 0 (+ (- px) (/ w 2))) ]
+        target-x (f.clamp -1350 0 (+ (- px) (/ w 2))) ]
     (gfx.translate target-x 0))
   (each [_ c (ipairs me.children)] (c:draw))
   (gfx.pop)
@@ -73,8 +81,7 @@
 (fn make [surface floor fish] 
 
   (let [sub (player.make [60 400])
-        decal-layer (decals.make)
-        ]
+        decal-layer (decals.make)]
     (pick-fish fish.fish)
     {
      : draw
@@ -84,10 +91,17 @@
      : floor
      : fish
 
+     :wave-delay (f.pick-rand wave-delays)
      :decals decal-layer
-     :needed-tags 6
-     :num-tags 0
      :player sub
+     :greetings [
+                 "Hi,\nRodger!"
+                 "Morning,\nJess!"
+                 "Heyo,\nFizz!"
+                 "Morning,\nMax!"
+                 "Sup\nMerlin!"
+                 "Nice fins\nBeau!"
+                 ]
 
      :children [fish decal-layer sub surface floor]
 

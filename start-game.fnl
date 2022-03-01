@@ -1,13 +1,19 @@
 (import-macros {: each-in : check} :m)
 (import-macros { : imp : req : += : -= : *= : unless } :m)
 
+(req dial :game.dial)
+
 (imp v) (imp f)
+(imp moonshine)
 
 (imp assets)
 (imp fennel)
 (req scenes :game.scenes)
 (req title :game.title)
 (req shake :game.shake)
+(req floor :game.floor)
+(req surface :game.floor)
+
 
 
 (local gfx love.graphics)
@@ -23,13 +29,6 @@
 (fn get-center [] (icollect [_ attr (ipairs (get-window-size))] (/ attr 2)))
 
 (var total-time 0)
-
-(fn gfx.at [pos f] 
-  (let [[x y] pos]
-  (gfx.push)
-  (gfx.translate x y)
-  (f)
-  (gfx.pop)))
 
 (fn love.mousepressed [x y button istouch presses]
   (set love.mouse.isJustPressed true))
@@ -48,34 +47,49 @@
 (fn love.keyreleased [_ scancode] 
   (tset love.keys.down scancode nil))
 
-(fn love.load [] 
+(var effect nil)
 
+(fn love.load [] 
+  (set effect (moonshine moonshine.effects.sketch))
+  ;(effect.chain moonshine.effects.crt)
+  ;(set effect.parameters { :glow { :strength 10 :min_luma 0 } })
   (each [_ [name r] 
          (ipairs 
            [[:title :game.title] 
             [:fish-tag :game.fish-tag]
-            [:breaking-crust :game.breaking-crust] ])]
+            [:breaking-crust :game.breaking-crust]
+            [:first-war :game.first-war]
+            [:credits :game.credits]
+            ])]
     (scenes.set name (require r)))
 
   (love.math.setRandomSeed (love.timer.getTime))
   ; Make these configurable?
   (gfx.setLineStyle :rough)
   ; TODO: Switch to none
-  (gfx.setLineJoin :none)
-  (gfx.setLineWidth 1)
+  (gfx.setLineJoin :miter)
+  (gfx.setLineWidth 2)
 
   (love.mouse.setGrabbed true)
-  (set MODE (title.make)))
+  (let [start (scenes.get :title)]
+  (set MODE (start.make true 
+                        ;(surface.make [0 30])
+                        ;(floor.make [0 500])
+                        )
+       )))
 
 (fn love.draw []
   (gfx.setFont assets.font)
+
   ; (love.graphics.print (love.timer.getFPS) 10 10)
   (gfx.push)
   (shake.apply gfx)
-  (when MODE.draw (MODE:draw))
+  (when MODE.draw 
+    (effect.draw (fn [] (MODE.draw MODE))))
   (gfx.pop))
 
-(fn love.update [dt]
+(fn love.update [dtprime]
+  (local dt (* dtprime (dial.get)))
   (shake.update dt)
   (when MODE.update (MODE:update dt))
 
@@ -86,6 +100,9 @@
   (each [k (pairs love.keys.justPressed)]
     (when (= k :c)
       (love.event.quit))
+    (match [k (dial.get)] 
+      [:p 0] (dial.restore)
+      [:p _] (do (dial.save) (dial.set 0)))
     (tset love.keys.justPressed k nil))
   (when MODE.next
     (set MODE MODE.next)))
