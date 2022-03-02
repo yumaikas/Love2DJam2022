@@ -3,6 +3,9 @@
 (local {: view} (require :fennel))
 (local vectron (require :game.vectron))
 
+
+(req names :game.fish.names)
+
 (local f (require :f))
 (local random love.math.random)
 (local noise love.math.noise)
@@ -62,14 +65,20 @@
     (fish:update dt)))
 
 
-(fn spawn-fish [w h i] 
-  (let [pos [(random 10 w )
+(fn spawn-fish [names w h i] 
+  (let [
+        [name color] (f.pop-rand names)
+        pos [(random 10 w )
              (random 30 h)]]
+    (print name)
+    (print (view color))
   {
+   : name
+   : color
    :update update-fish
    :draw draw-fish
-   :vector fish-small
-   :vector-hl fish-small-hl
+   :vector (fish-small color)
+   :vector-hl (fish-small-hl color)
    :acceleration 200
    :max-velocity 300
    :movement [0 0]
@@ -87,7 +96,7 @@
    :mode :wander
    :dims [w h]
    :fish (icollect [i (f.range 1 x)]
-                   (spawn-fish w h i))
+                   (spawn-fish (names) w h i))
    : update
    : draw
    })

@@ -15,10 +15,12 @@
 (req decals :game.decals)
 (req {: voice : wave } :assets)
 
+(local already-picked {})
+
 (fn pick-fish [fish]
   (each [_ fish (ipairs fish)]
     (set fish.tagged false))
-  (let [fish (f.pick-rand fish)]
+  (let [fish (f.pick-rand (f.filter.i fish #(not (. already-picked $))))]
         (set fish.tagged true)
         fish))
 
@@ -33,7 +35,10 @@
         tagged (f.find fish.fish (fn [sh] sh.tagged)) ]
     (when (> 40 (v.dist tagged.pos player.pos))
       (set tagged.tagged false)
-      (me.decals:spawn (f.pop-rand me.greetings) tagged.pos 1 [0 1 1])
+      (tset already-picked tagged true)
+      (me.decals:spawn 
+        (string.format (f.pop-rand me.greetings) tagged.name)
+                       tagged.pos 1 [0 1 1])
       (let [new-fish (pick-fish (f.filter.i fish.fish #(< 40 (v.dist $.pos player.pos))))]
         (voice:stop)
         (voice:play)
@@ -95,12 +100,12 @@
      :decals decal-layer
      :player sub
      :greetings [
-                 "Hi,\nRodger!"
-                 "Morning,\nJess!"
-                 "Heyo,\nFizz!"
-                 "Morning,\nMax!"
-                 "Sup\nMerlin!"
-                 "Nice fins\nBeau!"
+                 "Hi,\n%s!"
+                 "Morning,\n%s!"
+                 "Heyo,\n%s!"
+                 "Morning,\n%s!"
+                 "Sup\n%s!"
+                 "Nice fins\n%s!"
                  ]
 
      :children [fish decal-layer sub surface floor]

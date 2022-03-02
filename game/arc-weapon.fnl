@@ -1,4 +1,4 @@
-(import-macros {: -= : += : req : imp } :m)
+(import-macros {: -= : += : req : imp : gfx-at } :m)
 (req {: iter} :f)
 (req {: view} :fennel)
 (imp v) (imp c) (imp f)
@@ -50,7 +50,16 @@
   (each [{: from : to} (iter me.lines)] 
     (draw-spark-line from to))
   (each [t (iter me.reticles)]
-    (draw-lockon t.pos)))
+    (draw-lockon t.pos))
+  (gfx-at (v.add me.player.pos [-50 30])
+    (let [ x-end (f.remap me.charge 0 me.max-charge 10 85)]
+    (gfx.setColor 0.6 0.6 0.6)
+    (gfx.rectangle :line 0 0 90 15) 
+    (if (> me.charge 1)
+      (gfx.setColor 0.4 0.4 1)
+      (gfx.setColor 1 0 0))
+    (gfx.line 5 5 x-end 5)))
+  )
 
 (fn add-line [me from to t]
   (zap:stop)

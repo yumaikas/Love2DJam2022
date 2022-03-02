@@ -20,9 +20,10 @@ Push-location publish\
 "Fault Lines" | npx love.js faultLines.love faultLines -c -m (16777216*2)
 
 Copy-Item ..\projects\html\index.html .\faultLines\index.html
+Copy-Item ..\projects\html\love.css .\faultLines\love.css
 
 cd faultLines
-Compress-Archive (ls) ..\faultLines.zip
+Compress-Archive -Force (ls) ..\faultLines.zip
 
 if ($serve) {
 web-dir

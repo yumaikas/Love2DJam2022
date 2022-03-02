@@ -53,12 +53,6 @@
     (gfx.print 
       (string.format "%.2f" me.arc.charge )
                  10 (+ y 120))
-    (gfx.setColor 0.6 0.6 0.6)
-    (gfx.rectangle :line 5 (+ y 160) 110 15) 
-    (if (> arc.charge 1)
-      (gfx.setColor 0.4 0.4 1)
-      (gfx.setColor 1 0 0))
-    (gfx.line 10 (+ y 165) x-end (+ y 165))
     )
   )
 
