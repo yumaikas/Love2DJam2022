@@ -118,7 +118,11 @@
   (mult (unit a) mag-)
   ))
 
+(fn x-diff [[x1 _] [x2 _]] (- x1 x2))
+(fn y-diff [[_ y1] [_ y2]] (- y1 y2))
 
 
-{ : add : sub : mult : flatten : mag : flatten-into : dist : distxyp : dot : angle-of : unit : project-onto : rot<90 : rot>90 : clamp-mag }
+
+
+{ : add : sub : mult : flatten : mag : flatten-into : dist : distxyp : dot : angle-of : unit : project-onto : rot<90 : rot>90 : clamp-mag : x-diff : y-diff }
 

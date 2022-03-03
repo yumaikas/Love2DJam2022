@@ -97,7 +97,7 @@
     )
   (gfx.pop))
 
-(fn make [dims player surface floor decals barrage arc] 
+(fn make [dims player surface floor decals barrage arc fish] 
   (assets.battle-song:setLooping true)
   (assets.battle-song:play)
   (let [ [px _] player.pos]
@@ -111,11 +111,12 @@
      : decals
      : player
      : arc
+     : fish
      ; How long until the next wave is launched
      :wave-delay 0
      :budget start-budget
      :weapons [arc]
-     :children [player surface floor decals barrage arc]
+     :children [player surface floor decals barrage arc fish]
      :next false
      }))
 

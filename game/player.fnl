@@ -2,6 +2,7 @@
 (imp v) (imp f)
 (req {: iter} :f)
 (req {: engine } :assets) 
+(req dbg :game.debug)
 (local vectron (require :game.vectron))
 (local submarine (require :game.player.submarine))
 (local reticle (require :game.player.reticle))
@@ -11,7 +12,6 @@
 (local gfx love.graphics)
 
 (fn draw [me]
-
   (local dist (v.dist me.pos me.target))
   (if (and (love.mouse.isDown 1)
            (> dist 15))
@@ -88,6 +88,8 @@
   )
 
 (fn update [me dt]
+  (when (dbg.once)
+    (print (view me.pos)))
   (local dist (v.dist me.pos me.target))
   (if 
     (< dist 2)

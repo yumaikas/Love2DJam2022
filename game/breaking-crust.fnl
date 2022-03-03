@@ -15,10 +15,6 @@
 (local noise love.math.noise)
 (local gfx love.graphics)
 
-(fn do-fish-flee [me dt] 
-  (set me.fish.fish 
-       (f.filter.i me.fish.fish #(> $.retarget-timer 0))))
-
 (fn start-fish-flee [fish] 
   (let [
         [w h] fish.dims
@@ -63,7 +59,6 @@
         target-x (f.clamp -1350 0 (+ (- px) (/ w 2))) ]
     (gfx.translate target-x 0))
   (each [_ c (ipairs me.children)] (c:update dt))
-  (do-fish-flee me dt)
   (when (>= 0 (length me.barr.missiles))
     (let [war (scenes.get :first-war)]
       (set me.next (war.make 
@@ -73,14 +68,16 @@
                      me.floor
                      me.decals
                      me.barr
-                     me.arc))))
+                     me.arc
+                     me.fish
+                     ))))
   (gfx.pop)
   )
 
 (fn make [dims player surface floor fish decals] 
   (assets.pre-intro:play)
   (let [arc (arc-weapon.make player)
-        barr (barrage.make player surface floor [arc])
+        barr (barrage.make player surface floor [arc] fish)
         [px _] player.pos]
     (start-fish-flee fish)
     (barr:launch [px -100])

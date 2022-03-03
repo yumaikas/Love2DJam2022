@@ -14,6 +14,7 @@
 (req floor :game.floor)
 (req surface :game.floor)
 
+(req dbg :game.debug)
 
 
 (local gfx love.graphics)
@@ -91,18 +92,24 @@
 (fn love.update [dtprime]
   (local dt (* dtprime (dial.get)))
   (shake.update dt)
+
+  (each [k (pairs love.keys.justPressed)]
+    (when (= k :c)
+      (love.event.quit))
+    (when (= k :t)
+      (print "set debug")
+      (dbg.set true))
+    (match [k (dial.get)] 
+      [:p 0] (dial.restore)
+      [:p _] (do (dial.save) (dial.set 0)))
+    (tset love.keys.justPressed k nil))
+
   (when MODE.update (MODE:update dt))
+  (dbg.set false)
 
   (set love.mouse.isJustPressed false)
   (set love.mouse.isJustReleased false)
   (set love.mouse.delta nil)
 
-  (each [k (pairs love.keys.justPressed)]
-    (when (= k :c)
-      (love.event.quit))
-    (match [k (dial.get)] 
-      [:p 0] (dial.restore)
-      [:p _] (do (dial.save) (dial.set 0)))
-    (tset love.keys.justPressed k nil))
   (when MODE.next
     (set MODE MODE.next)))

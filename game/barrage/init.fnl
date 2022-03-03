@@ -51,7 +51,7 @@
       )
       )))
 
-(fn update-missile [me surface floor dt] 
+(fn update-missile [me surface floor fish dt] 
   (if 
     ; Above in the air
     (< (. me.pos 2) 0)
@@ -73,7 +73,9 @@
       (ground-hit:play)
       (set me.alive false)
       (shake.shake [4 4] 1 2)
-      (floor:strike x 1))
+      (floor:strike x 1)
+      (fish:strike x)
+      )
     ; Sinking to floor
     (> (. me.pos 2) 0)
     (tset me.pos 2 (+ (. me.pos 2) (* 60 dt)))
@@ -84,7 +86,7 @@
 
 (fn update [me dt]
   (each [m (iter me.missiles)]
-    (m:update me.surface me.floor dt))
+    (m:update me.surface me.floor me.fish dt))
   (f.filter.i! me.missiles #(. $ :alive))
   (each [w (iter me.weapons)]
     (w:give-targets 
@@ -105,17 +107,19 @@
      :harm harm-missile
      : pos :alive true }))
 
-(fn make [player surface floor weapons] 
+(fn make [player surface floor weapons fish] 
 
   {
    : launch
    :missiles []
+   : fish
    : weapons
    : update
    : draw
    : player
    : surface
    : floor
+   : fish
    }
   )
 
