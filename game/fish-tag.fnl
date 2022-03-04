@@ -38,7 +38,10 @@
       (tset already-picked tagged true)
       (me.decals:spawn 
         (string.format (f.pop-rand me.greetings) tagged.name)
-                       tagged.pos 1 [0 1 1])
+        tagged.pos 
+        1 
+        [0 1 1]
+        true)
       (let [new-fish (pick-fish (f.filter.i fish.fish #(< 40 (v.dist $.pos player.pos))))]
         (voice:stop)
         (voice:play)

@@ -75,24 +75,26 @@
 
 (var once true)
 (fn update-angel [me dt] 
+  (when (dbg.once)
+    (print (view me.pos)))
   (when once
     (table.insert love.keys.justPressed :p)
     (set once false))
   (let [dist (v.dist me.pos me.target)]
     (when (> dist 2)
       (set me.pos (v.add me.pos (v.mult [0 -1] (* dt me.velocity)))))
+    (when (<= dist 2) (-= me.flicker-timer dt))
     (when (and
             (<= dist 2)
             (f.positive? me.flicker-times)
             (< me.flicker-timer me.flicker-reset))
-      (-= me.flicker-times)
+      (-= me.flicker-times 1)
       (set me.flicker-timer me.flicker-time))))
 
 (fn draw-angel [me]
-  (when (dbg.once)
-    (print (view me.pos)))
-  (gfx-at me.pos 
-          (vectron.draw fish-angel)))
+  (when (f.positive? me.flicker-timer)
+    (gfx-at me.pos 
+            (vectron.draw fish-angel.shapes))))
 
 (fn kill-fish [me fish h] 
   (set me.fish (f.filter.i me.fish #(not= $ fish)))
@@ -105,18 +107,18 @@
      :update update-angel
      ; Harcoded Y coord is hardcoded
      :target [(. fish.pos 1) (- h 500)]
-     :flicker-times 12
+     :flicker-times 5
      :velocity 150
-     :flicker-timer 0.5
-     :flicker-time 0.5
-     :flicker-reset -0.1
+     :flicker-timer 0.25
+     :flicker-time 0.25
+     :flicker-reset -0.25
      })
   )
 
 (local three-times [0 1 2])
 
 (fn strike [me x]
-  (let [targeted-fish (f.filter.i me.fish #(< (math.abs (v.x-diff [x 0] $.pos)) 20))]
+  (let [targeted-fish (f.filter.i me.fish #(< (math.abs (v.x-diff [x 0] $.pos)) 60))]
     (each [_ (iter three-times)]
       (when (> (length targeted-fish) 0)
         (kill-fish me (f.pop-rand targeted-fish (. me.dims 2)) (. me.dims 2))))))
@@ -148,10 +150,12 @@
   {
    :mode :wander
    :dims [w h]
-   :fish (icollect [i (f.range 1 x)]
-                   (spawn-fish (names) w h i))
+   :fish (let [names* (names)]
+               (icollect [i (f.range 1 x)]
+                   (spawn-fish names* w h i)))
    :angels []
    :graveyard []
+   : kill-fish
    : strike
    : update
    : draw

@@ -15,15 +15,16 @@
 (fn update [me dt] 
   (each [d (iter me.elts)]
     (set d.time (- d.time dt)))
-  (f.filter.i! me.elts #(> $.time 0)))
+  (f.filter.i! me.elts #(or (not $.timed) (> $.time 0))))
 
-(fn spawn [me txt pos time color]
+(fn spawn [me txt pos time color timed]
   (table.insert me.elts 
-    { : txt : pos : time : color }))
+    { : txt : pos : time : color : timed}))
 
 (fn make [] 
   {
    :elts []
+   :font assets.font
    : update
    : draw
    : spawn

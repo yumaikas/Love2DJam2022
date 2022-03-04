@@ -90,10 +90,10 @@
     (and (= me.budget 0)
           (= (length me.barrage.missiles) 0))
     (let [credits (scenes.get :credits)]
-      (set me.next (credits.make true me.surface me.floor)))
+      (set me.next (credits.make true me.surface me.floor me.fish)))
     me.floor.breached
     (let [credits (scenes.get :credits)]
-      (set me.next (credits.make false me.surface me.floor)))
+      (set me.next (credits.make false me.surface me.floor me.fish)))
     )
   (gfx.pop))
 

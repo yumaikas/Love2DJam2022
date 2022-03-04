@@ -73,10 +73,7 @@
 
   (love.mouse.setGrabbed true)
   (let [start (scenes.get :title)]
-  (set MODE (start.make true 
-                        ;(surface.make [0 30])
-                        ;(floor.make [0 500])
-                        )
+  (set MODE (start.make true )
        )))
 
 (fn love.draw []
