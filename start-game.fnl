@@ -51,9 +51,8 @@
 (var effect nil)
 
 (fn love.load [] 
-  (set effect (moonshine moonshine.effects.sketch))
-  ;(effect.chain moonshine.effects.crt)
-  ;(set effect.parameters { :glow { :strength 10 :min_luma 0 } })
+  (set effect (moonshine moonshine.effects.glow))
+  (set effect.parameters { :glow { :strength 5 :min_luma 0 } })
   (each [_ [name r] 
          (ipairs 
            [[:title :game.title] 
@@ -69,7 +68,7 @@
   (gfx.setLineStyle :rough)
   ; TODO: Switch to none
   (gfx.setLineJoin :miter)
-  (gfx.setLineWidth 2)
+  (gfx.setLineWidth 3)
 
   (love.mouse.setGrabbed true)
   (let [start (scenes.get :title)]

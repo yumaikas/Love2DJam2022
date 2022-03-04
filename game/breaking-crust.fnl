@@ -10,6 +10,9 @@
 (req barrage :game.barrage)
 (req decals  :game.decals)
 (req arc-weapon :game.arc-weapon)
+(req interlude :game.interlude)
+(req warning-vec :game.warnings.up)
+(req reticle :game.player.reticle)
 
 (local random love.math.random)
 (local noise love.math.noise)
@@ -81,20 +84,47 @@
         [px _] player.pos]
     (start-fish-flee fish)
     (barr:launch [px -100])
-    {
-     : update
-     : draw
-     : dims
-     : barr
-     : surface
-     : floor
-     : fish
-     : decals
-     : player
-     : arc
-     :weapons [arc]
-     :children [player surface floor fish decals barr arc]
-     :next false
-     }))
+    (let [me {
+              : update
+              : draw
+              : dims
+              : barr
+              : surface
+              : floor
+              : fish
+              : decals
+              : player
+              : arc
+              :weapons [arc]
+              :children [player surface floor fish decals barr arc]
+              :next false
+              }]
+     (interlude.make 
+       me
+       [ 
+        { :font assets.small-font :color [1 1 0]
+           :pos [30 70]
+           :text "\"TREMOR MISSILES?!\"" }
+        { :font assets.small-font :color [1 1 0]
+           :pos [30 100]
+           :text "\"DO THEY WANT A QUAKE?!\"" }
+
+        { :font assets.small-font :color [0 1 0]
+           :pos [40 160]
+           :text "MOVE TO CHARGE ARC CANNON" }
+        { :font assets.small-font :color [0 1 0]
+           :pos [40 190]
+           :text "STOP TO RELEASE CHARGE" }
+        { :font assets.small-font :color [0 1 0]
+           :pos [40 220]
+           :text "AND DESTROY MISSILES" }
+        ]
+       [ {
+          :vectr warning-vec
+          :pos [225 25]
+          }
+        ]
+
+      ))))
 
 {: make }
